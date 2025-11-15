@@ -3,7 +3,7 @@ import time
 import struct
 
 UDP_IP = "10.187.41.1"   
-UDP_PORT = 3000
+UDP_PORT = 4443
 ACK_PORT = 3001
 
 # Sockets
