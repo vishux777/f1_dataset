@@ -1,17 +1,31 @@
-import os
-import fastf1
 import pandas as pd
-if not os.path.exists("f1_cache"):
-    os.makedirs("f1_cache")
-fastf1.Cache.enable_cache('f1_cache')
-session = fastf1.get_session(2023, "Monza", "R")
-session.load()
-full_data = pd.DataFrame()
-for drv in session.drivers:
-    laps = session.laps.pick_driver(drv)
-    for _, lap in laps.iterrows():
-        tel = lap.get_telemetry()
-        tel["Driver"] = drv
-        full_data = pd.concat([full_data, tel], ignore_index=True)
-full_data.to_csv("full_race_telemetry.csv", index=False)
-print("Done! full_race_telemetry.csv created.")
+
+# Load original telemetry
+df = pd.read_csv("telemetry.csv")
+
+# Columns to keep
+cols_to_keep = [
+    "Date",
+    "SessionTime",
+    "Time",
+    "RPM",
+    "Speed",
+    "nGear",
+    "Throttle",
+    "Brake",
+    "Status",
+    "Driver"
+]
+
+# Keep clean dataframe
+df_clean = df[cols_to_keep].copy()
+
+# Add ES column (default 0)
+df_clean["ES"] = 0
+
+# Set ES = 1 for two emergency signal points (example rows)
+df_clean.loc[20000, "ES"] = 1
+df_clean.loc[60000, "ES"] = 1
+
+# Save output
+df_clean.to_csv("telemetry.csv", index=False)
